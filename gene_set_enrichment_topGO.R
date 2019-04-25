@@ -73,3 +73,53 @@ plot(x = seq(1, table(result_table$qval < 0.05)[2], 1),
 axis(1, at = seq(1, table(result_table$qval < 0.05)[2], 1),
           labels = result_table[result_table$qval < 0.05, "Term"], las = 2)
 dev.off()
+
+
+# when running in conjuctin with simulation of null distribution
+# collapse to plotting df
+plot_df = result_table[result_table$qval <= 0.05, ]
+colnames(df)[1] = "Term"
+sim = df[df$Term %in% plot_df$Term , ]
+
+plot_df = merge(plot_df, sim, by = "Term", all.x = TRUE)
+
+# add +/- 1 SD
+plot_df$upper = plot_df$meanFDR + plot_df$sdFDR
+plot_df$lower = plot_df$meanFDR - plot_df$sdFDR
+
+# sort based on mean FDR
+plot_df = plot_df[order(plot_df$meanFDR) ,]
+
+# plot
+pdf(file = paste(quartile, "_quartile", trait, "_topGO_observed_vs_simulated.pdf", sep = ""), height = 11, width = 8.5)
+par(oma = c(14,1,1,1))
+plot(x = seq(1,length(plot_df$Term),1),
+     y = plot_df$meanFDR,
+     pch = 16,
+     col = "dodgerblue",
+     xlab = "",
+     ylab = "FDR (mean and standard deviation)",
+     ylim = c(0, max(plot_df$meanFDR) + max(plot_df$sdFDR)),
+     xaxt = "n",
+     main = paste(quartile, "quartile", trait, "PRS stratification vs Monte Carlo simulation", sep = " ")
+)
+
+axis(1, at = seq(1,length(plot_df$Term),1), labels = plot_df$Term, las = 2)
+
+arrows(x0 = seq(1,length(plot_df$Term),1), x1 = seq(1,length(plot_df$Term),1), 
+       y0 = plot_df$lower, y1 = plot_df$upper, 
+       angle = 90,
+       code = 3,
+       col = "dodgerblue",
+       length = 0.1
+)
+
+points(x = seq(1,length(plot_df$Term),1), y = plot_df$qval, pch = 15, col = "firebrick")
+
+legend("topleft", legend = c("Monte Carlo Simulation", "PRS stratification"), 
+       col = c("dodgerblue", "firebrick"),
+       pch = c(16, 15),
+       bty = "n"
+)
+
+dev.off()
