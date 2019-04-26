@@ -1,0 +1,60 @@
+# install necessary packages
+#if (!requireNamespace("BiocManager"))
+#        install.packages("BiocManager")
+#BiocManager::install()
+
+#if (!requireNamespace("BiocManager", quietly = TRUE))
+#        install.packages("BiocManager")
+#BiocManager::install("topGO", version = "3.8")
+
+#if (!requireNamespace("BiocManager", quietly = TRUE))
+#        install.packages("BiocManager")
+#BiocManager::install("org.Hs.eg.db", version = "3.8")
+
+library(topGO)
+library(org.Hs.eg.db)
+
+# individuals and PRS for stratification
+master = read.table("15_Jan_19_Simons_master_ancestry_corrected_PRS.txt", sep = '\t', header = TRUE)
+probands = master[master$family_member == 'p1' ,]
+proband_ids = probands$simons_id
+
+# de novo mutations
+denovos = read.table("master_gatk_rufus_med_high_variant_table.txt", sep = '\t', header = TRUE)
+
+# gene symbol to GO term mapping
+x <- annFUN.org("BP", mapping = "org.Hs.eg.db", ID = "symbol")
+allGenes <- unique(unlist(x))
+
+# setup space for results
+mc_results = list()
+
+# run
+for(i in seq(1,100,1)){
+    # get sample ids (random)
+    poi = sample(proband_ids, 413)
+    qoi = probands[probands$simons_id %in% poi , ]  
+    ids = qoi$simons_id
+
+    # get genes which harbor variants of interest
+    voi = denovos[denovos$SampleID %in% ids , ]
+    goi = voi$SYMBOL
+    geneList <- factor(as.integer(allGenes %in% goi))
+    names(geneList) <- allGenes
+
+    # run enrichment test
+    GOdata <- new("topGOdata", ontology = "BP", allGenes = geneList, nodeSize = 1, annot = annFUN.org, mapping = 'org.Hs.eg.db', ID = 'symbol')
+    result <- runTest(GOdata, algorithm = "classic", statistic = "fisher")
+
+    # gather results
+    result_table <- GenTable(GOdata, classic = result, orderBy = "weight", ranksOf = "classic", topNodes = length(score(result)))
+
+    # FDR correction
+    result_table$qval = p.adjust(result_table$classic, method = "fdr")
+
+    mc_results[[i]] = result_table
+}
+
+# save
+uniq_filename = as.character(as.numeric(mc_results[[1]][1,4]) * as.numeric(mc_results[[1]][1,6]) * as.numeric(mc_results[[1]][1,7])) 
+save(mc_results, file = paste(uniq_filename, "_gene_set_enrichment_Monte_Carlo_results.RData", sep = ""))
