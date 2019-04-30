@@ -23,11 +23,15 @@ proband_ids = probands$simons_id
 denovos = read.table("master_gatk_rufus_med_high_variant_table.txt", sep = '\t', header = TRUE)
 
 # gene symbol to GO term mapping
-x <- annFUN.org("BP", mapping = "org.Hs.eg.db", ID = "symbol")
-allGenes <- unique(unlist(x))
+x = annFUN.org("BP", mapping = "org.Hs.eg.db", ID = "symbol")
+allGenes = unique(unlist(x))
 
 # setup space for results
 mc_results = list()
+
+# set seed and outpufile name
+s = as.numeric(format(Sys.time(), "%OS3")) * 1000
+set.seed(s)
 
 # run
 for(i in seq(1,100,1)){
@@ -39,15 +43,15 @@ for(i in seq(1,100,1)){
     # get genes which harbor variants of interest
     voi = denovos[denovos$SampleID %in% ids , ]
     goi = voi$SYMBOL
-    geneList <- factor(as.integer(allGenes %in% goi))
-    names(geneList) <- allGenes
+    geneList = factor(as.integer(allGenes %in% goi))
+    names(geneList) = allGenes
 
     # run enrichment test
-    GOdata <- new("topGOdata", ontology = "BP", allGenes = geneList, nodeSize = 1, annot = annFUN.org, mapping = 'org.Hs.eg.db', ID = 'symbol')
-    result <- runTest(GOdata, algorithm = "classic", statistic = "fisher")
+    GOdata = new("topGOdata", ontology = "BP", allGenes = geneList, nodeSize = 10, annot = annFUN.org, mapping = 'org.Hs.eg.db', ID = 'symbol')
+    result = runTest(GOdata, algorithm = "classic", statistic = "fisher")
 
     # gather results
-    result_table <- GenTable(GOdata, classic = result, orderBy = "weight", ranksOf = "classic", topNodes = length(score(result)))
+    result_table = GenTable(GOdata, classic = result, orderBy = "weight", ranksOf = "classic", topNodes = length(score(result)))
 
     # FDR correction
     result_table$qval = p.adjust(result_table$classic, method = "fdr")
@@ -56,5 +60,5 @@ for(i in seq(1,100,1)){
 }
 
 # save
-uniq_filename = as.character(as.numeric(mc_results[[1]][1,4]) * as.numeric(mc_results[[1]][1,6]) * as.numeric(mc_results[[1]][1,7])) 
-save(mc_results, file = paste(uniq_filename, "_gene_set_enrichment_Monte_Carlo_results.RData", sep = ""))
+s2 = as.numeric(format(Sys.time(), "%OS3")) * 1000
+save(mc_results, file = paste(as.character(s*s2), "_gene_set_enrichment_Monte_Carlo_results.RData", sep = ""))
