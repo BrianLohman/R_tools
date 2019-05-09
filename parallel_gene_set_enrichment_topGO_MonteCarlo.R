@@ -29,9 +29,9 @@ allGenes = unique(unlist(x))
 # setup space for results
 mc_results = list()
 
-# set seed and outpufile name
+# set seed (fractions of second at current time * PID)
 s = as.numeric(format(Sys.time(), "%OS3")) * 1000
-set.seed(s)
+set.seed(s*Sys.getpid())
 
 # run
 for(i in seq(1,100,1)){
@@ -59,6 +59,6 @@ for(i in seq(1,100,1)){
     mc_results[[i]] = result_table
 }
 
-# save
+# save file as random seed * finish time
 s2 = as.numeric(format(Sys.time(), "%OS3")) * 1000
-save(mc_results, file = paste(as.character(s*s2), "_gene_set_enrichment_Monte_Carlo_results.RData", sep = ""))
+save(mc_results, ids, goi, file = paste(as.character(s*s2), "_gene_set_enrichment_Monte_Carlo_results.RData", sep = ""))
