@@ -26,12 +26,17 @@ denovos = read.table("master_gatk_rufus_med_high_variant_table.txt", sep = '\t',
 x = annFUN.org("BP", mapping = "org.Hs.eg.db", ID = "symbol")
 allGenes = unique(unlist(x))
 
-# setup space for results
+# setup space for results and to track samples and genes in each iteration
 mc_results = list()
+genes = list()
+samples = list()
 
 # set seed (fractions of second at current time * PID)
 s = as.numeric(format(Sys.time(), "%OS3")) * 1000
-set.seed(s*Sys.getpid())
+s
+pid = Sys.getpid()
+pid
+set.seed(s*as.numeric(pid))
 
 # run
 for(i in seq(1,100,1)){
@@ -57,8 +62,10 @@ for(i in seq(1,100,1)){
     result_table$qval = p.adjust(result_table$classic, method = "fdr")
 
     mc_results[[i]] = result_table
+    genes[[i]] = as.character(goi)
+    samples[[i]] = as.character(ids)
 }
 
 # save file as random seed * finish time
 s2 = as.numeric(format(Sys.time(), "%OS3")) * 1000
-save(mc_results, ids, goi, file = paste(as.character(s*s2), "_gene_set_enrichment_Monte_Carlo_results.RData", sep = ""))
+save(mc_results, samples, genes, file = paste(as.character(s*s2), "_gene_set_enrichment_Monte_Carlo_results.RData", sep = ""))
