@@ -1,4 +1,5 @@
 rm(list = ls())
+
 # load libraries
 library(plyr)
 
@@ -39,7 +40,7 @@ for(i in filenames){
 }
 
 # check length 10000
-if(length(master_results) != 200){
+if(length(master_results) != 10000){
     stop("incorrect number of simulations loaded")
 }
 
@@ -56,7 +57,6 @@ colnames(sample_dict) = iterations
 for(i in 1:length(iterations)){
     sample_dict[,i] = master_samples[[i]]
 }
-head(sample_dict)
 
 # save to file
 write.table(sample_dict, file = "topGO_10K_sample_dict.txt", quote = FALSE, sep = "\t")
