@@ -1,4 +1,6 @@
 rm(list = ls())
+# load libraries
+library(plyr)
 
 # glob in RData files
 filenames <- Sys.glob("*.RData")
@@ -29,17 +31,17 @@ for(i in filenames){
         master_results[[100*k+j]] = mc_results[[j]]
 
         # add samples in the iteration to the master sample list
-        master_samples[[100*k+j]] = as.character(ids[[j]])
+        master_samples[[100*k+j]] = as.character(samples[[j]])
     
         # get genes for each iteration and save to master
-        master_genes[[100*k+j]] = as.character(goi[[j]])
+        master_genes[[100*k+j]] = as.character(genes[[j]])
     }
 }
 
 # check length 10000
-#if(length(master_results) != 10000){
-#    stop("incorrect number of simulations loaded")
-#}
+if(length(master_results) != 200){
+    stop("incorrect number of simulations loaded")
+}
 
 # get list of GO terms
 uniq_go = master_results[[1]][,1]
@@ -47,32 +49,46 @@ uniq_go = master_results[[1]][,1]
 # print number of go terms included in analysis
 length(uniq_go)
 
+# SAMPLE TABLE
 # make table of iteration and sample IDs
-sample_dict = as.data.frame(matrix(nrow = 413, ncol = 200))
+sample_dict = as.data.frame(matrix(nrow = 413, ncol = length(iterations)))
 colnames(sample_dict) = iterations
-for(i in 1:2){
-    sample_dict[,i] = master_samples[[i]][1]
+for(i in 1:length(iterations)){
+    sample_dict[,i] = master_samples[[i]]
 }
-sample_dict
+head(sample_dict)
 
 # save to file
 write.table(sample_dict, file = "topGO_10K_sample_dict.txt", quote = FALSE, sep = "\t")
 
-# make table of genes for each iteration
-# maybe replace this with a different approach:
-#   convert each element in the list to a data frame with 1 row
-#   make the column names the gene names
-#   merge onto prior element in the list
-
-gene_table = as.data.frame(matrix(nrow = 2, ncol = length(master_genes[[1]])))
-row.names(gene_table) = iterations
-colnames(gene_table) = genes[[1]]
-
-for(i in row.names(gene_table)){
-    
-
+# GENE TABLE
+# make table of genes in each simulation
+for(i in 1:length(master_genes)){
+    if(i == 1){
+        gene_table = t(as.data.frame(master_genes[[i]]))
+        colnames(gene_table) = gene_table[1,]
+    } else {
+        x = t(as.data.frame(master_genes[[i]]))
+        colnames(x) = x[1,]
+        gene_table = rbind.fill(as.data.frame(gene_table), as.data.frame(x))
+    }
 }
 
+# set row names (stripped by plyr)
+row.names(gene_table) = iterations
+
+# convert to numeric (columns are factors)
+for(i in 1:ncol(gene_table)){
+    gene_table[,i] = as.numeric(gene_table[,i])
+}
+
+# convert NA to 0
+gene_table[is.na(gene_table)] = 0
+
+# write to file
+write.table(gene_table, file = "topGO_10K_gene_table.txt", quote = FALSE, sep = "\t")
+
+# P AND Q VALUES
 # empty sapce for raw p-values: rows are iterations and columns are GO terms
 df_pval = as.data.frame(matrix(nrow = length(master_results), ncol = length(uniq_go)))
 colnames(df_pval) = uniq_go
