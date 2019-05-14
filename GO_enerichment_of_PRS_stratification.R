@@ -80,6 +80,8 @@ result_table <- GenTable(GOdata, classic = result, orderBy = "weight", ranksOf =
 
 result_table$qval = p.adjust(result_table$classic, method = "fdr")
 
+write.table(result_table, file = paste(quartile, trait, kid, "data.txt", sep = "_"), sep = "\t", quote = FALSE, row.names = FALSE)
+    
 # plotting
 # collapse to plotting df
 plot_df = result_table[result_table$qval <= 0.05 ,]
