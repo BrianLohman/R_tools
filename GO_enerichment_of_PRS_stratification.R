@@ -80,7 +80,14 @@ result_table <- GenTable(GOdata, classic = result, orderBy = "weight", ranksOf =
 
 result_table$qval = p.adjust(result_table$classic, method = "fdr")
 
+# save stats results
 write.table(result_table, file = paste(quartile, trait, kid, "data.txt", sep = "_"), sep = "\t", quote = FALSE, row.names = FALSE)
+
+# save metadata: genes used in testing
+write.table(goi, file = paste(quartile, trait, kid, "gene_list.txt", sep = "_"), sep = "\t", quote = FALSE, row.names = FALSE)
+
+# save metatdat: samples used in testing
+write.table(ids, file = paste(quartile, trait, kid, "sample_list.txt", sep = "_"), sep = "\t", quote = FALSE, row.names = FALSE)
     
 # plotting
 # collapse to plotting df
