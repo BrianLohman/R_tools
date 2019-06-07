@@ -15,8 +15,10 @@ library(topGO)
 library(org.Hs.eg.db)
 
 # individuals and PRS for stratification
+# EUR probands only
 master = read.table("15_Jan_19_Simons_master_ancestry_corrected_PRS.txt", sep = '\t', header = TRUE)
 probands = master[master$family_member == 'p1' ,]
+probands = master[master$ancestry.prediction == "EUR" ,]
 proband_ids = probands$simons_id
 
 # de novo mutations
@@ -41,7 +43,7 @@ set.seed(s*as.numeric(pid))
 # run
 for(i in seq(1,100,1)){
     # get sample ids (random)
-    poi = sample(proband_ids, 413)
+    poi = sample(proband_ids, 325)
     qoi = probands[probands$simons_id %in% poi , ]  
     ids = qoi$simons_id
 
