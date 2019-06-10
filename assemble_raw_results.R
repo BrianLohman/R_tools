@@ -52,7 +52,7 @@ length(uniq_go)
 
 # SAMPLE TABLE
 # make table of iteration and sample IDs
-sample_dict = as.data.frame(matrix(nrow = 413, ncol = length(iterations)))
+sample_dict = as.data.frame(matrix(nrow = 325, ncol = length(iterations)))
 colnames(sample_dict) = iterations
 for(i in 1:length(iterations)){
     sample_dict[,i] = master_samples[[i]]
