@@ -7,7 +7,7 @@ library(scales)
 library(gmodels)
 
 # individuals and PRS for stratification
-master = read.table("15_Jan_19_Simons_master_ancestry_corrected_PRS.txt", sep = '\t', header = TRUE)
+master = read.table("June2019_EUR_master_PRS_pheno.txt", sep = '\t', header = TRUE)
 
 # de novo mutations
 denovos = read.table("master_gatk_rufus_med_high_variant_table.txt", sep = '\t', header = TRUE)
@@ -22,28 +22,28 @@ topGO_and_plot = function(quartile, trait, kid){
 # get sample IDs of interest
 if(trait != "mom_bmi"){
     probands = master[master$family_member == kid ,]
-    probands = probands[order(probands[paste(trait, "_ancestry_resid", sep = "")]) , ]
+    probands = probands[order(probands[paste(trait, "_ancestry_resid_19", sep = "")]) , ]
     
     if(quartile == "first"){
-            qoi = head(probands, n = 413)
+            qoi = head(probands, n = 325)
     }
     
     if(quartile == "fourth"){
-            qoi = tail(probands, n = 413)
+            qoi = tail(probands, n = 325)
     }
 }
 
 if(trait == "mom_bmi"){
     moms = master[master$family_member == "mo" , ]
-    moms = moms[order(moms$NewBMI_ancestry_resid) ,]
+    moms = moms[order(moms$Body.Mass.Index__ancestry_resid_19) ,]
     if(quartile == "first"){
-            fams = head(moms, n = 413)
+            fams = head(moms, n = 325)
       fams = fams$family
           qoi = master[master$family %in% fams & master$family_member == kid ,]
         
     }
     if(quartile == "fourth"){
-            fams = tail(moms, n = 413)
+            fams = tail(moms, n = 325)
         fams = fams$family
             qoi = master[master$family %in% fams & master$family_member == kid ,]
     }
