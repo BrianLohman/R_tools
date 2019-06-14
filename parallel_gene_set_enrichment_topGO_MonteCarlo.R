@@ -16,7 +16,7 @@ library(org.Hs.eg.db)
 
 # individuals and PRS for stratification
 # EUR probands only
-master = read.table("15_Jan_19_Simons_master_ancestry_corrected_PRS.txt", sep = '\t', header = TRUE)
+master = read.table("June2019_EUR_master_PRS_pheno.txt", sep = '\t', header = TRUE)
 probands = master[master$family_member == 'p1' ,]
 probands = master[master$ancestry.prediction == "EUR" ,]
 proband_ids = probands$simons_id
@@ -36,7 +36,7 @@ samples = list()
 # set seed (fractions of second at current time * PID)
 s = as.numeric(format(Sys.time(), "%OS3")) * 1000
 s
-pid = Sys.getpid()
+pid = as.numeric(Sys.getpid())
 pid
 set.seed(s*as.numeric(pid))
 
@@ -70,4 +70,6 @@ for(i in seq(1,100,1)){
 
 # save file as random seed * finish time
 s2 = as.numeric(format(Sys.time(), "%OS3")) * 1000
-save(mc_results, samples, genes, file = paste(as.character(s*s2), "_gene_set_enrichment_Monte_Carlo_results.RData", sep = ""))
+fname = paste(as.character(s*s2), "_gene_set_enrichment_Monte_Carlo_results.RData", sep = "")
+fname
+save(mc_results, samples, genes, file = fname)
