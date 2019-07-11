@@ -13,8 +13,9 @@ for(p in prs_of_interest){
       upper = master[master$family_member == "p1" & master$family %in% fourth_fams , ]
                
       } else {
-                        
-      sorted = master[order(master$Educational.Attainment_ancestry_resid_19), ]
+      
+      probands = master[master$family_member == "p1" ,]
+      sorted = probands[order(probands[. which(colnames(probands) == p)]), ]
       fourth = tail(sorted$IID, n = 325)
       first = head(sorted$IID, n = 325)
       lower = master[master$IID %in% first ,]
