@@ -42,7 +42,7 @@ for(p in prs_of_interest){
             stat = paste(stat1, stat2, sep = " p = ")
                         
             } else {
-                stat = t.test(y, z, var.equal = FALSE)[3]
+                stat = t.test(y, z)[3]
             }
                   
             plot(x = c(jitter(rep(1.2,length(y))), jitter(rep(1.8, length(z)))), 
