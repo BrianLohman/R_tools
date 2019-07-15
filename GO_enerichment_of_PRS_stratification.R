@@ -7,7 +7,7 @@ library(scales)
 library(gmodels)
 
 # individuals and PRS for stratification
-master = read.table("June2019_EUR_master_PRS_pheno.txt", sep = '\t', header = TRUE)
+master = read.table("V2_June2019_EUR_master_PRS_pheno.txt", sep = '\t', header = TRUE)
 
 # de novo mutations
 denovos = read.table("master_gatk_rufus_med_high_variant_table.txt", sep = '\t', header = TRUE)
@@ -25,16 +25,16 @@ if(trait != "mom_bmi"){
     probands = probands[order(probands[paste(trait, "_ancestry_resid_19", sep = "")]) , ]
     
     if(quartile == "first"){
-            qoi = head(probands, n = 325)
+            qoi = head(probands, n = round(nrow(probands)/4))
     }
     
     if(quartile == "fourth"){
-            qoi = tail(probands, n = 325)
+            qoi = tail(probands, n = round(nrow(probands)/4))
     }
 }
 
 if(trait == "mom_bmi"){
-    moms = master[master$family_member == "mo" , ]
+    moms = master[master$family_member == "mo" & master$ancestry.prediction == "EUR" , ]
     moms = moms[order(moms$Body.Mass.Index__ancestry_resid_19) ,]
     if(quartile == "first"){
             fams = head(moms, n = 325)
@@ -46,6 +46,21 @@ if(trait == "mom_bmi"){
             fams = tail(moms, n = 325)
         fams = fams$family
             qoi = master[master$family %in% fams & master$family_member == kid ,]
+    }
+}
+
+if(trait == "dad_bmi"){
+    dads = master[master$family_member == "fa" & master$ancestry.prediction == "EUR" , ]
+    dads = dads[order(moms$Body.Mass.Index_ancestry_resid_19) ,]
+    if(quartile == "first"){
+        fams = head(dads, n = round(nrow(dads)/4))
+        fams = fams$family
+        qoi = master[master$family %in% fams & master$family_member == kid ,]    
+    }
+    if(quartile == "fourth"){
+        fams = tail(dads, n = round(nrow(dads)/4))
+        fams = fams$family
+        qoi = master[master$family %in% fams & master$family_member == kid ,]
     }
 }
 
