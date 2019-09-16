@@ -1,3 +1,7 @@
+# Make stick plots of difference in phenotypes by PRS quaratile
+# Mean and standard error of phenotype of 1st vs 4th quartile
+# Students t-test for difference in mean (assumes equal variance)
+
 prs_of_interest = c("Educational.Attainment_ancestry_resid_19", "Autism.Spectrum.Disorder_ancestry_resid_19", "ADHD.2017_ancestry_resid_19", "Educational.Attainment_ancestry_resid_19", "Major.Depressive.Disorder_ancestry_resid_19", "Schizophrenia_ancestry_resid_19", "Body.Mass.Index_ancestry_resid_19")
 
 for(p in prs_of_interest){
