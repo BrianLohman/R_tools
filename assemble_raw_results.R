@@ -1,3 +1,15 @@
+#!/usr/bin/env R
+
+# USAGE: assemble_raw_results.R 
+# Looks for .RData files from parallel simulations in current working directory
+
+# Join results from parallel simulation of null distribution of
+# proband ascertainment bias in GO enrichment.
+
+# Builds table that is used to plot mean and standard deviation
+# of q-values expected by random chance in stratification by
+# PRS approach
+
 rm(list = ls())
 
 # load libraries
