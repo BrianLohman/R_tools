@@ -1,3 +1,8 @@
+# Estimate null distribution of GO enrichment expected
+# due to proband ascertainment bias. 
+
+# Depricated. Use parallel version for much faster run time. 
+
 # install necessary packages
 #if (!requireNamespace("BiocManager"))
 #        install.packages("BiocManager")
