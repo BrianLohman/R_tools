@@ -1,3 +1,9 @@
+# Generate null distribution of GO enrichment that is expected 
+# due to proband ascertainment bias by randomly selecting
+# European probands and testing for enrichment in de novo variants.
+
+# Written for deployment via SLURM with 1,000 concurent instances
+
 # install necessary packages
 #if (!requireNamespace("BiocManager"))
 #        install.packages("BiocManager")
