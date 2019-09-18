@@ -1,3 +1,7 @@
+# Run GO enrichment after stratifying by PRS of interest
+# Contrasts against simulsted null values
+# Outputs large PDF with many plots
+
 # Load data and setup
 rm(list = ls())
 library(topGO)
@@ -273,9 +277,9 @@ dev.off()
 # run
 for(q in c("first", "fourth")){
   for(t in c("EA", "SCZ", "mom_bmi")){
-          for(k in c("p1", "s1")){
-                    print(c(q, t, k))
-  try(topGO_and_plot(quartile = q, trait = t, kid = k), silent = TRUE)
-      }
+    for(k in c("p1", "s1")){
+        print(c(q, t, k))
+        try(topGO_and_plot(quartile = q, trait = t, kid = k), silent = TRUE)
+    }
   }
 }
